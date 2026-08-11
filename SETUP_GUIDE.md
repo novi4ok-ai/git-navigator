@@ -198,10 +198,37 @@ gh auth login
   3. **Generate SSH Key:** → `Yes` (автоматически генерирует современный ключ `Ed25519` и загружает его публичную часть на GitHub).
   4. **Authentication method:** → `Paste an authentication token` (использование Personal Access Token с правами `repo`, `admin:public_key`).
 
+### Проверка состояния авторизации
+
 ```bash
-# Проверка состояния авторизации
 gh auth status
 ```
+
+Пример реального вывода после успешной настройки:
+
+```text
+~/projects/git-navigator$ gh auth status
+github.com
+  ✓ Logged in to github.com account novi4ok-ai (/home/kornik/.config/gh/hosts.yml)
+  - Active account: true
+  - Git operations protocol: ssh
+  - Token: ghp_************************************
+  - Token scopes: 'admin:enterprise', 'admin:gpg_key', 'admin:org', 'admin:org_hook',
+    'admin:public_key', 'admin:repo_hook', 'admin:ssh_signing_key', 'audit_log',
+    'codespace', 'copilot', 'delete:packages', 'delete_repo', 'gist', 'notifications',
+    'project', 'repo', 'user', 'workflow', 'write:discussion',
+    'write:network_configurations', 'write:packages'
+```
+
+- **Как читать вывод:**
+  * `✓ Logged in to ... account novi4ok-ai` — авторизация активна. Зелёная галочка `✓` означает успех; крестик `✗` означает, что токен отсутствует, истёк или отозван.
+  * `(/home/kornik/.config/gh/hosts.yml)` — файл, в котором `gh` хранит учётные данные. Именно его нужно проверять при проблемах с авторизацией.
+  * `Active account: true` — этот аккаунт выбран как активный. Параметр важен, если через `gh auth login` добавлено несколько аккаунтов (например личный и рабочий).
+  * `Git operations protocol: ssh` — операции `push`/`pull` идут по SSH. Это следствие выбора `SSH` на шаге авторизации; при значении `https` Git будет требовать токен вместо ключа.
+  * `Token: ghp_****...` — токен всегда маскируется звёздочками, поэтому такой вывод безопасно показывать и сохранять в документации. Посмотреть значение целиком можно командой `gh auth token`, но её вывод — секрет.
+  * `Token scopes` — список прав, выданных токену.
+
+> ⚠️ **О правах токена:** в примере выше выдан очень широкий набор, включая `admin:org`, `admin:enterprise` и `delete_repo` — такой токен позволяет удалять репозитории и управлять организацией. Для задач этого руководства достаточно `repo` и `admin:public_key`. По принципу наименьших привилегий стоит выпустить отдельный токен только с нужными правами: [github.com/settings/tokens](https://github.com/settings/tokens).
 
 ---
 
